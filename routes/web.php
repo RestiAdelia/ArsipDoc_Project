@@ -8,6 +8,7 @@ use App\Http\Controllers\KategoriSuratController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\SuratMasukController;
+use App\Http\Controllers\TemplateSuratController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -42,6 +43,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::post('/admin/user/store', [AuthController::class, 'store'])
         ->name('admin.user.store');
+        Route::get('/template/create', [TemplateSuratController::class, 'create'])
+    ->name('template.create');
+
+Route::post('/template/store', [TemplateSuratController::class, 'store'])
+    ->name('template.store');
     Route::post('/template/{id}/edit-form', [GenerateSuratController::class, 'editForm'])
     ->name('template.editForm');
     Route::get('/template', [GenerateSuratController::class, 'pilihTemplate'])->name('template.pilih');

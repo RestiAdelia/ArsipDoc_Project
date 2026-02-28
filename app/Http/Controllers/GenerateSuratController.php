@@ -6,7 +6,7 @@ use App\Models\SuratKeluar;
 use App\Models\TemplateSurat;
 use App\Models\Instansi;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Tetap dipakai untuk logic lain jika perlu, tapi tidak disimpan ke DB
+use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 
@@ -19,14 +19,9 @@ class GenerateSuratController extends Controller
         return view('template.pilih_template', compact('templates'));
     }
 
-    /**
-     * 2️⃣ Form dinamis berdasarkan template
-     */
     public function form($id)
     {
         $template = TemplateSurat::findOrFail($id);
-
-        // decode field json dari template
         $fields = $template->field_json ?? [];
 
         return view('template.form_dinamis', compact('template', 'fields'));
@@ -39,7 +34,7 @@ class GenerateSuratController extends Controller
         $next = $last ? $last->id + 1 : 1;
 
         return sprintf(
-            "%03d/RTS/%02d/%s",
+            "%03d/SRT/%02d/%s",
             $next,
             now()->month,
             now()->year
@@ -51,15 +46,11 @@ class GenerateSuratController extends Controller
         $template = TemplateSurat::findOrFail($id);
         $instansi = Instansi::first();
 
-       
+
         $dataInput = $request->except('_token');
 
         $nomorSurat = $this->generateNomorSurat($template->kategori_id);
-
-        // ambil isi template
         $isi = $template->isi_template;
-
-        // 🔥 REPLACE LEBIH KUAT (ANTI SPASI)
         foreach ($dataInput as $key => $value) {
             $isi = preg_replace('/{{\s*' . $key . '\s*}}/', $value, $isi);
         }
@@ -70,16 +61,33 @@ class GenerateSuratController extends Controller
             'nomor'     => $nomorSurat,
             'dataInput' => $dataInput,
             'instansi'  => $instansi,
-            'surat'     => null // 🔥 PENTING untuk blade
+            'surat'     => null
         ]);
     }
 
     public function simpan(Request $request, $id)
     {
         $template = TemplateSurat::findOrFail($id);
+        $instansi = Instansi::first();
 
-        $dataInput   = $request->except('_token');
-        $nomorSurat  = $this->generateNomorSurat($template->kategori_id);
+        $dataInput  = $request->except('_token');
+        $nomorSurat = $this->generateNomorSurat($template->kategori_id);
+        $isi = $template->isi_template;
+        foreach ($dataInput as $key => $value) {
+            $isi = str_replace("{{" . $key . "}}", $value, $isi);
+        }
+        $namaFile = 'surat-' . str_replace('/', '-', $nomorSurat) . '.pdf';
+        $path = 'surat_keluar/' . $namaFile;
+
+        $pdf = Pdf::loadView('template.pdf', [
+            'template' => $template,
+            'isi'      => $isi,
+            'nomor'    => $nomorSurat,
+            'instansi' => $instansi
+        ])->setPaper('A4', 'portrait');
+
+
+        Storage::disk('public')->put($path, $pdf->output());
 
 
         $surat = SuratKeluar::create([
@@ -87,15 +95,13 @@ class GenerateSuratController extends Controller
             'kategori_id' => $template->kategori_id,
             'nomor_surat' => $nomorSurat,
             'data_isian'  => json_encode($dataInput),
-            'file_pdf'    => null,
-
+            'file_pdf'    => $path,
         ]);
 
         return redirect()
             ->route('template.previewSaved', $surat->id)
-            ->with('success', 'Surat berhasil disimpan');
+            ->with('success', 'Surat berhasil disimpan & PDF dibuat');
     }
-
 
     public function previewSaved($id)
     {
@@ -113,7 +119,7 @@ class GenerateSuratController extends Controller
 
         return view('template.preview', [
             'template'  => $surat->template,
-            'isi'       => $isi, // Hasil generate ulang
+            'isi'       => $isi,
             'nomor'     => $surat->nomor_surat,
             'dataInput' => $dataInput,
             'instansi'  => $instansi,
@@ -122,45 +128,29 @@ class GenerateSuratController extends Controller
     }
 
     public function editForm(Request $request, $id)
-{
-    $template = TemplateSurat::findOrFail($id);
-    $fields   = $template->field_json ?? [];
+    {
+        $template = TemplateSurat::findOrFail($id);
+        $fields   = $template->field_json ?? [];
 
-    // ambil data lama dari preview
-    $oldInput = $request->except('_token');
+        $oldInput = $request->except('_token');
 
-    return view('template.form_dinamis', [
-        'template' => $template,
-        'fields'   => $fields,
-        'oldInput' => $oldInput
-    ]);
-}
+        return view('template.form_dinamis', [
+            'template' => $template,
+            'fields'   => $fields,
+            'oldInput' => $oldInput
+        ]);
+    }
+
 
     public function exportPdf($id)
     {
-        $surat    = SuratKeluar::with('template')->findOrFail($id);
-        $instansi = Instansi::first();
-
-        $dataInput = json_decode($surat->data_isian, true) ?? [];
-
-        $isi = $surat->template->isi_template;
-
-        foreach ($dataInput as $key => $value) {
-            $isi = str_replace("{{" . $key . "}}", $value, $isi);
+        $surat = SuratKeluar::findOrFail($id);
+        if (!$surat->file_pdf || !Storage::disk('public')->exists($surat->file_pdf)) {
+            return back()->with('error', 'File PDF belum tersedia');
         }
-        $pdf = Pdf::loadView('template.pdf', [
-            'template' => $surat->template,
-            'isi'      => $isi,
-            'nomor'    => $surat->nomor_surat,
-            'instansi' => $instansi
-        ])->setPaper('A4', 'portrait');
-        $namaFile = 'surat-' . str_replace('/', '-', $surat->nomor_surat) . '.pdf';
 
-        $path = 'surat_keluar/' . $namaFile;
-        Storage::disk('public')->put($path, $pdf->output());
-        $surat->update([
-            'file_pdf' => $path
-        ]);
-        return $pdf->download($namaFile);
+        return response()->download(
+            storage_path('app/public/' . $surat->file_pdf)
+        );
     }
 }

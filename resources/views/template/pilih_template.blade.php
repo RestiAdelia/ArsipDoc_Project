@@ -7,6 +7,17 @@
     <div>
         <p class="text-[11px] uppercase tracking-[0.2em] text-slate-400 mb-0.5">Surat Keluar</p>
         <h1 class="text-lg font-semibold text-slate-800" style="font-family: 'Georgia', serif;">Pilih Template Surat</h1>
+   <a href="{{ route('template.create') }}"
+       class="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-xl shadow-sm transition">
+
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"/>
+        </svg>
+
+        Tambah Template
+    </a>
     </div>
 
     <!-- Grid Template -->

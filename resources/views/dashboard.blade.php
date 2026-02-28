@@ -70,6 +70,20 @@
                 </p>
                 <p class="text-xs text-slate-400 mt-1">Surat masuk</p>
             </div>
+             <div class="bg-white border border-stone-200 rounded-2xl shadow-sm px-7 py-6">
+                <div class="flex items-center justify-between mb-4">
+                    <p class="text-[11px] uppercase tracking-[0.2em] text-slate-400 font-medium">Surat Keluar</p>
+                    <div class="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-3xl font-semibold text-slate-800" style="font-family: 'Georgia', serif;">
+                    {{ $totalSuratKeluar }}</p>
+                <p class="text-xs text-slate-400 mt-1">Total keseluruhan</p>
+            </div>
             <div class="bg-white border border-stone-200 rounded-2xl shadow-sm px-7 py-6">
                 <div class="flex items-center justify-between mb-4">
                     <p class="text-[11px] uppercase tracking-[0.2em] text-slate-400 font-medium">Total Admin</p>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dokumen;
+use App\Models\SuratKeluar;
 use App\Models\SuratMasuk;
 use App\Models\User;
 use Carbon\Carbon;
@@ -16,14 +17,16 @@ class DashboardController extends Controller
         $suratHariIni = SuratMasuk::whereDate('created_at', Carbon::today())->count();
         $totalAdmin = User::where('role', 'admin')->count();
         $totalUser  = User::where('role', 'user')->count();
+        $totalSuratKeluar = SuratKeluar::count();
 
 
         return view('dashboard', compact(
             'totalDokumen',
             'totalSuratMasuk',
             'suratHariIni',
-             'totalAdmin',
-        'totalUser',
+            'totalAdmin',
+            'totalSuratKeluar',
+            'totalUser',
         ));
     }
     public function userDashboard()
