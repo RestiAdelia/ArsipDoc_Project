@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class SuratMasuk extends Model
 {
-   use HasFactory;
+    use HasFactory;
 
     protected $table = 'surat_masuk';
 
-   protected $fillable = [
+    protected $fillable = [
         'user_id',
         'nomor_surat',
         'asal_surat',
@@ -25,5 +25,9 @@ class SuratMasuk extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function dokumen()
+    {
+        return $this->hasOne(Dokumen::class, 'nomor_dokumen', 'nomor_surat');
     }
 }

@@ -4,25 +4,28 @@
 <div class="space-y-5">
 
     <!-- Header -->
-    <div>
-        <p class="text-[11px] uppercase tracking-[0.2em] text-slate-400 mb-0.5">Surat Keluar</p>
-        <h1 class="text-lg font-semibold text-slate-800" style="font-family: 'Georgia', serif;">Pilih Template Surat</h1>
-   <a href="{{ route('template.create') }}"
-       class="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-xl shadow-sm transition">
-
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-             stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"/>
-        </svg>
-
-        Tambah Template
-    </a>
+    <div class="flex items-center justify-between">
+        <div>
+            <p class="text-[11px] uppercase tracking-[0.2em] text-slate-400 mb-0.5">Surat Keluar</p>
+            <h1 class="text-lg font-semibold text-slate-800" style="font-family: 'Georgia', serif;">Template Surat</h1>
+        </div>
+        <a href="{{ route('template.create') }}"
+           class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-xl transition-all duration-200 hover:-translate-y-0.5 shadow-md shadow-slate-900/15">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+            </svg>
+            Tambah Template
+        </a>
     </div>
 
     <!-- Grid Template -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse($templates as $t)
+
+        @php
+            $preview = preg_replace('/{{.*?}}/', '________', $t->isi_template);
+            $preview = \Illuminate\Support\Str::limit(strip_tags($preview), 180);
+        @endphp
 
         <div class="bg-white border border-stone-200 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex flex-col">
 
@@ -43,7 +46,7 @@
                 </h3>
             </div>
 
-            <!-- Preview -->
+            <!-- Preview Surat -->
             <div class="px-6 py-4 flex-1" style="font-family: 'Times New Roman', serif;">
                 <table class="w-full mb-3" style="font-size: 11px; color: #64748b;">
                     <tr>
@@ -60,10 +63,6 @@
 
                 <div class="h-px bg-stone-100 mb-3"></div>
 
-                @php
-                    $preview = preg_replace('/{{.*?}}/', '________', $t->isi_template);
-                    $preview = \Illuminate\Support\Str::limit(strip_tags($preview), 180);
-                @endphp
                 <p class="text-slate-400 leading-relaxed" style="font-size: 11px; text-align: justify;">
                     {{ $preview }}
                 </p>
@@ -80,25 +79,24 @@
             </div>
 
             <!-- Footer Aksi -->
-           <!-- Footer Aksi -->
-<div class="px-6 py-4 bg-stone-50 border-t border-stone-100 flex gap-2">
-    <button onclick="openPreview(this)"
-            data-template="{{ addslashes(strip_tags($t->isi_template)) }}"
-            class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 bg-white border border-stone-200 hover:border-stone-300 rounded-xl transition-colors duration-200">
-        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-        </svg>
-        Preview
-    </button>
-    <a href="{{ route('template.form', $t->id) }}"
-       class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-xl transition-all duration-200">
-        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
-        </svg>
-        Gunakan
-    </a>
-</div>
+            <div class="px-6 py-4 bg-stone-50 border-t border-stone-100 flex gap-2">
+                <button onclick="openPreview(this)"
+                        data-template="{{ addslashes(strip_tags($t->isi_template)) }}"
+                        class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 bg-white border border-stone-200 hover:border-stone-300 rounded-xl transition-colors duration-200">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Preview
+                </button>
+                <a href="{{ route('template.form', $t->id) }}"
+                   class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-xl transition-all duration-200">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
+                    </svg>
+                    Gunakan
+                </a>
+            </div>
 
         </div>
 
@@ -134,55 +132,87 @@
             </button>
         </div>
 
-        <!-- Modal Body: Tampilan Surat -->
+        <!-- Modal Body -->
         <div class="px-10 py-8" style="font-family: 'Times New Roman', serif;">
 
-           <div class="border-b-4 border-double border-black pb-4 mb-6 flex items-center gap-4">
-           <img src="{{ isset($instansi->logo) ? asset('storage/'.$instansi->logo) : asset('storage/instansi/logo.png') }}"
-     class="w-20 h-20 object-contain"
-     alt="Logo"
-     onerror="this.style.display='none'">
-            
-            <div class="text-center w-full">
-                <h2 class="text-xl font-bold uppercase">{{ $instansi->nama_instansi ?? 'NAMA INSTANSI' }}</h2>
-                <p class="text-sm">{{ $instansi->alamat ?? 'Alamat Instansi Lengkap' }}</p>
-                <p class="text-sm">Telp: {{ $instansi->telepon ?? '-' }} | Email: {{ $instansi->email ?? '-' }}</p>
+            <!-- Kop Surat -->
+            <div style="border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 16px;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td style="width:80px; text-align:center; vertical-align:middle; padding-right:10px;">
+                            <img src="{{ isset($instansi->logo) ? asset('storage/'.$instansi->logo) : asset('storage/instansi/logo.png') }}"
+                                 style="height:64px; width:auto; object-fit:contain;"
+                                 alt="Logo"
+                                 onerror="this.style.display='none'">
+                        </td>
+                        <td style="text-align:center; vertical-align:middle;">
+                            <p style="font-size:14pt; font-weight:bold; text-transform:uppercase; margin:0 0 2px 0;">
+                                {{ $instansi->nama_instansi ?? 'NAMA INSTANSI' }}
+                            </p>
+                            <p style="font-size:9pt; margin:0; line-height:1.4;">
+                                {{ $instansi->alamat ?? 'Jl. Alamat Instansi No. 1, Kota' }}
+                            </p>
+                            <p style="font-size:9pt; margin:0; line-height:1.4;">
+                                Telp: {{ $instansi->telepon ?? '-' }}&nbsp;&nbsp;|&nbsp;&nbsp;
+                                Email: {{ $instansi->email ?? '-' }}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
             </div>
-        </div>
-
 
             <!-- Info Surat -->
-            <table class="mb-4" style="font-size: 12px;">
+            <table style="border-collapse:collapse; margin-bottom:12px;">
                 <tr>
-                    <td width="80px" class="pb-1">Nomor</td>
-                    <td width="12px" class="pb-1">:</td>
-                    <td class="pb-1 text-slate-400 italic">............/........./{{ date('Y') }}</td>
+                    <td style="width:80px; padding:1px 0; font-size:12px;">Nomor</td>
+                    <td style="width:12px; padding:1px 0; font-size:12px;">:</td>
+                    <td style="padding:1px 0; font-size:12px; color:#94a3b8; font-style:italic;">............/........./{{ date('Y') }}</td>
                 </tr>
                 <tr>
-                    <td class="pb-1">Perihal</td>
-                    <td class="pb-1">:</td>
-                    <td class="pb-1 font-semibold">Template Surat</td>
+                    <td style="padding:1px 0; font-size:12px;">Sifat</td>
+                    <td style="padding:1px 0; font-size:12px;">:</td>
+                    <td style="padding:1px 0; font-size:12px;">Biasa</td>
+                </tr>
+                <tr>
+                    <td style="padding:1px 0; font-size:12px;">Lampiran</td>
+                    <td style="padding:1px 0; font-size:12px;">:</td>
+                    <td style="padding:1px 0; font-size:12px;">-</td>
+                </tr>
+                <tr>
+                    <td style="padding:1px 0; font-size:12px;">Perihal</td>
+                    <td style="padding:1px 0; font-size:12px;">:</td>
+                    <td style="padding:1px 0; font-size:12px; font-weight:bold;">Template Surat</td>
                 </tr>
             </table>
 
-            <!-- Isi Surat -->
+            <!-- Tujuan -->
+            <div style="margin-bottom:10px; font-size:12px; line-height:1.6;">
+                <p>Yth.</p>
+                <p>Kepala / Pimpinan yang Bersangkutan</p>
+                <p>di &ndash;</p>
+                <p><u>Tempat</u></p>
+            </div>
+
+            <!-- Salam -->
+            <p style="font-size:12px; margin-bottom:8px;">Dengan hormat,</p>
+
+            <!-- Isi -->
             <div id="previewContent"
-                 class="text-slate-700 leading-relaxed whitespace-pre-line"
-                 style="font-size: 12px; text-align: justify;">
+                 style="font-size:12px; line-height:1.6; text-align:justify; color:#1e293b; white-space:pre-line; margin-bottom:8px;">
             </div>
 
             <!-- TTD -->
-            <div class="flex justify-end mt-8">
-                <div class="text-center" style="font-size: 11px; color: #64748b;">
+            <div style="display:flex; justify-content:flex-end; margin-top:24px;">
+                <div style="text-align:center; font-size:11px; color:#64748b; width:200px;">
                     <p>............, .................. {{ date('Y') }}</p>
-                    <p class="mt-1">Pejabat Berwenang,</p>
-                    <div class="mt-10 mb-1 border-b border-slate-400 w-36 mx-auto"></div>
-                    <p class="font-semibold text-slate-700">( Nama Pejabat )</p>
+                    <p style="margin-top:4px;">Pejabat Berwenang,</p>
+                    <div style="height:48px;"></div>
+                    <p style="font-weight:bold; text-decoration:underline; color:#1e293b;">( Nama Pejabat )</p>
                     <p>NIP. ........................</p>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
 </div>
 

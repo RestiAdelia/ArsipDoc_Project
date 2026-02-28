@@ -61,6 +61,9 @@ Route::post('/template/store', [TemplateSuratController::class, 'store'])
     Route::resource('kategori', KategoriSuratController::class);
     Route::get('/surat-keluar', [SuratKeluarController::class, 'index'])
     ->name('surat-keluar.index');
+
+    Route::post('/surat-masuk/{id}/arsipkan', [SuratMasukController::class, 'arsipkan'])
+    ->name('surat-masuk.arsipkan');
 });
 
 

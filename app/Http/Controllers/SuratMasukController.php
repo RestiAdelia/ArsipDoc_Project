@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dokumen;
 use App\Models\SuratMasuk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class SuratMasukController extends Controller
@@ -17,7 +19,6 @@ class SuratMasukController extends Controller
             'user' => Auth::user(),
             'surat' => $surat
         ]);
-       
     }
 
     public function create()
@@ -92,7 +93,7 @@ class SuratMasukController extends Controller
         return view('user.surat_masuk.create');
     }
 
-    
+
     private function handleFileUpload($request)
     {
         if ($request->hasFile('file')) {
@@ -123,7 +124,7 @@ class SuratMasukController extends Controller
 
         // Simpan Data
         SuratMasuk::create([
-            'user_id' => Auth::id(), 
+            'user_id' => Auth::id(),
             'nomor_surat' => $request->nomor_surat,
             'asal_surat' => $request->asal_surat,
             'perihal' => $request->perihal,
@@ -146,4 +147,35 @@ class SuratMasukController extends Controller
             'file'          => 'required|mimes:pdf,doc,docx|max:2048',
         ]);
     }
+   public function arsipkan($id)
+{
+    DB::beginTransaction();
+
+    try {
+        $surat = SuratMasuk::findOrFail($id);
+        $sudahAda = Dokumen::where('nomor_dokumen', $surat->nomor_surat)->exists();
+
+        if ($sudahAda) {
+            return back()->with('error', 'Surat ini sudah pernah diarsipkan!');
+        }
+
+        // ✅ SIMPAN KE DOKUMEN
+        Dokumen::create([
+            'kategori_id'     => 1,
+            'nomor_dokumen'   => $surat->nomor_surat,
+            'nama_dokumen'    => $surat->perihal,
+            'tanggal_dokumen' => $surat->tanggal_surat,
+            'file_dokumen'    => $surat->file,
+            'keterangan'      => 'Arsip dari Surat Masuk: ' . $surat->asal_surat,
+        ]);
+
+        DB::commit();
+
+        return redirect()->route('dokumen.index')
+    ->with('success', 'Surat berhasil diarsipkan');
+    } catch (\Throwable $e) {
+        DB::rollBack();
+        return back()->with('error', 'Gagal arsipkan: ' . $e->getMessage());
+    }
+}
 }
