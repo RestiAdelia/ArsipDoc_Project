@@ -112,7 +112,7 @@
                     <p class="font-bold underline">
                         {{ $instansi->nama_pimpinan ?? '(Nama Pimpinan)' }}
                     </p>
-                    <p>NIP. {{ $instansi->nip_pimpinan ?? '-' }}</p>
+                    
                 </div>
             </div>
 
