@@ -12,20 +12,17 @@
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; background-color: #F8FAFC; }
         
-        /* === PALET ELEGAN & PROFESIONAL === */
-        /* Primary: #141E30 (Navy Gelap) */
         .bg-primary { background-color: #141E30; }
         .text-primary { color: #141E30; }
         .border-primary { border-color: #141E30; }
         .ring-primary { ring-color: #141E30; }
         
-        /* Secondary: #2C3E50 (Biru Keabu-abuan) */
+        
         .bg-secondary { background-color: #2C3E50; }
         .text-secondary { color: #2C3E50; }
         .border-secondary { border-color: #2C3E50; }
         .hover\:bg-secondary:hover { background-color: #2C3E50; }
-        
-        /* Accent Emas: #D4AF37 */
+       
         .bg-accent { background-color: #D4AF37; }
         .text-accent { color: #D4AF37; }
         .border-accent { border-color: #D4AF37; }
@@ -33,7 +30,6 @@
         .hover\:bg-accent:hover { background-color: #c9a227; }
         .hover\:text-accent:hover { color: #D4AF37; }
         
-        /* Background lembut untuk card & form */
         .bg-soft { background-color: #F8FAFC; }
         .bg-card { background-color: #FFFFFF; }
         
@@ -41,11 +37,10 @@
         .text-body { color: #334155; }
         .text-muted { color: #64748B; }
         
-        /* Custom focus & transition */
+
         .focus\:border-accent:focus { border-color: #D4AF37; }
         .focus\:ring-accent:focus { ring-color: #D4AF37; }
         
-        /* Gradien halus untuk background (opsional) */
         .bg-gradient-subtle {
             background: linear-gradient(145deg, #F8FAFC 0%, #f1f5f9 100%);
         }
@@ -55,10 +50,10 @@
 
     <div class="w-full max-w-sm">
 
-        <!-- Logo / Brand dengan aksen emas -->
+        <!-- Logo -->
         <div class="text-center mb-5">
             <div class="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-3 shadow-lg shadow-primary/20 relative overflow-hidden">
-                <!-- Aksen emas di sudut -->
+              
                 <div class="absolute -top-2 -right-2 w-6 h-6 bg-accent opacity-20 rounded-full"></div>
                 <svg class="w-6 h-6 text-white relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
@@ -71,7 +66,7 @@
             </h1>
         </div>
 
-        <!-- Card dengan bayangan elegan -->
+        
         <div class="bg-card border border-stone-200/70 rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm">
 
             <div class="px-8 pt-5 pb-2 border-b border-stone-100 text-center">
@@ -79,7 +74,7 @@
                 <p class="text-xs text-muted mt-0.5">Silakan masuk untuk melanjutkan.</p>
             </div>
 
-            <!-- Alerts dengan sentuhan warna -->
+            <!-- Alert -->
             <div class="px-8 pt-3 space-y-2">
                 @if(session('success'))
                     <div class="flex items-center gap-2.5 px-4 py-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-xl">
@@ -115,7 +110,6 @@
 
                 <div class="px-8 py-4 space-y-4">
 
-                    <!-- Email dengan aksen emas saat focus -->
                     <div>
                         <label class="block text-[11px] uppercase tracking-[0.2em] text-muted font-medium mb-1.5 flex items-center gap-1">
                             <span class="w-1 h-1 bg-accent rounded-full"></span>
@@ -155,7 +149,7 @@
                   
                 </div>
 
-                <!-- Footer Aksi dengan tombol elegan -->
+                <!-- Footer  -->
                 <div class="px-8 py-4 bg-soft border-t border-stone-100">
                     <button type="submit"
                             class="group relative w-full py-3 text-sm font-medium text-white bg-primary hover:bg-secondary rounded-xl transition-all duration-300 hover:-translate-y-0.5 shadow-lg shadow-primary/20 hover:shadow-xl overflow-hidden">
@@ -178,8 +172,6 @@
             </p>
             <span class="h-px w-8 bg-gradient-to-l from-transparent to-accent/30"></span>
         </div>
-
-        <!-- Decorative elements -->
         <div class="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10"></div>
         <div class="absolute bottom-0 right-0 w-80 h-80 bg-accent/5 rounded-full blur-3xl -z-10"></div>
 

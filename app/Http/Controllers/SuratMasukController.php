@@ -14,7 +14,10 @@ class SuratMasukController extends Controller
 
     public function  index()
     {
-        $surat = SuratMasuk::latest()->paginate(10);
+        $surat = SuratMasuk::orderByRaw("status_arsip = 'aktif'") 
+            ->latest()
+            ->paginate(10);
+
         return view('admin.surat_masuk.index', [
             'user' => Auth::user(),
             'surat' => $surat
@@ -73,9 +76,6 @@ class SuratMasukController extends Controller
 
     public function indexUser()
     {
-        //     // Menampilkan surat terbaru
-        //     $surat = SuratMasuk::latest()->paginate(10);
-        //     return view('user.surat_masuk.index', compact('surat'));
         $surat = SuratMasuk::where('user_id', Auth::id())
             ->latest()
             ->paginate(10);
@@ -86,8 +86,6 @@ class SuratMasukController extends Controller
         ]);
     }
 
-
-    // 2. Menampilkan form create untuk user
     public function createUser()
     {
         return view('user.surat_masuk.create');
@@ -99,13 +97,8 @@ class SuratMasukController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
 
-            // ambil nama asli
             $originalName = $file->getClientOriginalName();
-
-            // 🔥 biar tidak ketimpa kalau nama sama
             $filename = time() . '_' . $originalName;
-
-            // simpan ke storage/public/surat_masuk
             $file->storeAs('surat_masuk', $filename, 'public');
 
             return 'surat_masuk/' . $filename;
@@ -116,13 +109,11 @@ class SuratMasukController extends Controller
 
     public function storeUser(Request $request)
     {
-        // Validasi
+
         $this->validateRequest($request);
 
-        // Upload File
         $filePath = $this->handleFileUpload($request);
 
-        // Simpan Data
         SuratMasuk::create([
             'user_id' => Auth::id(),
             'nomor_surat' => $request->nomor_surat,
@@ -147,35 +138,39 @@ class SuratMasukController extends Controller
             'file'          => 'required|mimes:pdf,doc,docx|max:2048',
         ]);
     }
-   public function arsipkan($id)
-{
-    DB::beginTransaction();
+    public function arsipkan($id)
+    {
+        DB::beginTransaction();
 
-    try {
-        $surat = SuratMasuk::findOrFail($id);
-        $sudahAda = Dokumen::where('nomor_dokumen', $surat->nomor_surat)->exists();
+        try {
+            $surat = SuratMasuk::findOrFail($id);
 
-        if ($sudahAda) {
-            return back()->with('error', 'Surat ini sudah pernah diarsipkan!');
+            // ✅ CEK sudah pernah diarsipkan
+            if ($surat->status_arsip === 'aktif') {
+                return back()->with('error', 'Surat ini sudah pernah diarsipkan!');
+            }
+
+            Dokumen::create([
+                'kategori_id'     => 1,
+                'nomor_dokumen'   => $surat->nomor_surat,
+                'nama_dokumen'    => $surat->perihal,
+                'tanggal_dokumen' => $surat->tanggal_surat,
+                'file_dokumen'    => $surat->file,
+                'keterangan'      => 'Arsip dari Surat Masuk: ' . $surat->asal_surat,
+            ]);
+
+
+            $surat->update([
+                'status_arsip' => 'aktif'
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('dokumen.index')
+                ->with('success', 'Surat berhasil diarsipkan');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal arsipkan: ' . $e->getMessage());
         }
-
-        // ✅ SIMPAN KE DOKUMEN
-        Dokumen::create([
-            'kategori_id'     => 1,
-            'nomor_dokumen'   => $surat->nomor_surat,
-            'nama_dokumen'    => $surat->perihal,
-            'tanggal_dokumen' => $surat->tanggal_surat,
-            'file_dokumen'    => $surat->file,
-            'keterangan'      => 'Arsip dari Surat Masuk: ' . $surat->asal_surat,
-        ]);
-
-        DB::commit();
-
-        return redirect()->route('dokumen.index')
-    ->with('success', 'Surat berhasil diarsipkan');
-    } catch (\Throwable $e) {
-        DB::rollBack();
-        return back()->with('error', 'Gagal arsipkan: ' . $e->getMessage());
     }
-}
 }

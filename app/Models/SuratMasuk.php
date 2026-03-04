@@ -20,6 +20,7 @@ class SuratMasuk extends Model
         'tanggal_surat',
         'file',
         'status',
+        'status_arsip',
     ];
 
     public function user()
