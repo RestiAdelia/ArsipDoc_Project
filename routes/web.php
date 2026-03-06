@@ -18,9 +18,11 @@ Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::post('/login-proses', [AuthController::class, 'loginProses'])->name('login.proses');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index'); // tampil
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit'); // form edit
-Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update'); // proses update
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+Route::get('/profile/password', [ProfileController::class, 'editPassword'])->name('profile.password');
+Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/dashboard',  [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -43,30 +45,28 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::post('/admin/user/store', [AuthController::class, 'store'])
         ->name('admin.user.store');
-        Route::get('/template/create', [TemplateSuratController::class, 'create'])
-    ->name('template.create');
+    Route::get('/template/create', [TemplateSuratController::class, 'create'])
+        ->name('template.create');
 
-Route::post('/template/store', [TemplateSuratController::class, 'store'])
-    ->name('template.store');
+    Route::post('/template/store', [TemplateSuratController::class, 'store'])
+        ->name('template.store');
     Route::post('/template/{id}/edit-form', [GenerateSuratController::class, 'editForm'])
-    ->name('template.editForm');
+        ->name('template.editForm');
     Route::get('/template', [GenerateSuratController::class, 'pilihTemplate'])->name('template.pilih');
     Route::get('template/form/{id}', [GenerateSuratController::class, 'form'])->name('template.form');
     Route::post('template/preview/{id}', [GenerateSuratController::class, 'preview'])->name('template.preview');
     Route::post('template/simpan/{id}', [GenerateSuratController::class, 'simpan'])->name('template.simpan');
     Route::get('template/preview/{id}', [GenerateSuratController::class, 'previewSaved'])->name('template.previewSaved');
     Route::get('template/pdf/{id}', [GenerateSuratController::class, 'exportPdf'])->name('template.pdf');
-    
+
     Route::resource('dokumen', DokumenController::class);
     Route::resource('kategori', KategoriSuratController::class);
     Route::get('/surat-keluar', [SuratKeluarController::class, 'index'])
-    ->name('surat-keluar.index');
+        ->name('surat-keluar.index');
 
     Route::post('/surat-masuk/{id}/arsipkan', [SuratMasukController::class, 'arsipkan'])
-    ->name('surat-masuk.arsipkan');
+        ->name('surat-masuk.arsipkan');
 });
-
-
 
 Route::middleware(['auth', 'user'])->prefix('user')->name('user.')->group(function () {
     Route::get('surat_masuk', [SuratMasukController::class, 'indexUser'])->name('surat_masuk.index'); // list surat user

@@ -1,266 +1,234 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="max-w-5xl mx-auto space-y-5">
-    <!-- Form Card dengan layout 2 kolom -->
-    <div class="bg-white rounded-xl border border-stone-200/70 shadow-md overflow-hidden">
-        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
+    <div class="max-w-4xl mx-auto space-y-6">
 
-            <input type="hidden" name="role" value="{{ $user->role }}">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-0.5">Akun</p>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-stone-100">
-                
-                <!-- SIDEBAR KIRI: Foto & Role Info -->
-                <div class="lg:col-span-1 p-6 bg-stone-50/50">
-                    <div class="space-y-6 sticky top-6">
-                        <!-- Section Title -->
-                        <div>
-                            <div class="flex items-center gap-2 mb-3">
-                                <div class="w-1 h-5 bg-secondary rounded-full"></div>
-                                <h3 class="text-xs font-semibold uppercase tracking-wider" style="color: #141E30;">Foto Profil</h3>
-                            </div>
-                            
-                            <!-- Preview Foto -->
-                            <div class="flex flex-col items-center text-center">
-                                <div class="relative group mb-4">
-                                    @if($user->foto)
-                                        <img id="preview-foto"
-                                             src="{{ asset('storage/'.$user->foto) }}"
-                                             alt="{{ $user->name }}"
-                                             class="w-32 h-32 rounded-2xl object-cover border-4 border-white shadow-xl ring-4 ring-secondary/10 group-hover:ring-secondary/30 transition-all duration-300">
-                                    @else
-                                        <div id="preview-initials"
-                                             class="w-32 h-32 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-5xl shadow-xl ring-4 ring-secondary/10"
-                                             style="background: linear-gradient(135deg, #141E30, #3E5A76);">
-                                            {{ strtoupper(substr($user->name, 0, 1)) }}
-                                        </div>
-                                        <img id="preview-foto"
-                                             src=""
-                                             alt="Preview"
-                                             class="w-32 h-32 rounded-2xl object-cover border-4 border-white shadow-xl hidden">
-                                    @endif
-                                    
-                                    <!-- Status indicator -->
-                                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-400 rounded-full border-3 border-white"></div>
-                                </div>
-                                
-                                <!-- Upload Area -->
-                                <div class="w-full">
-                                    <label for="input-foto" class="block w-full cursor-pointer">
-                                        <div class="border-2 border-dashed border-stone-300 bg-white rounded-xl p-4 hover:border-secondary hover:bg-secondary/5 transition-all duration-200">
-                                            <svg class="w-6 h-6 text-slate-300 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                                            </svg>
-                                            <p class="text-xs text-slate-500">Klik untuk upload foto</p>
-                                            <p class="text-[9px] text-slate-400 mt-1">JPG/PNG, maks 2MB</p>
-                                        </div>
-                                    </label>
-                                    <input type="file" name="foto" id="input-foto" accept="image/*" class="hidden">
-                                    @error('foto') <p class="text-[10px] text-red-400 mt-2 text-center">{{ $message }}</p> @enderror
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Info Role Card -->
-                        <div class="bg-white rounded-xl border border-stone-200 p-4">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-7 h-7 rounded-lg bg-secondary/10 flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                                    </svg>
-                                </div>
-                                <span class="text-xs font-medium text-slate-600">Role Akun</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm font-semibold capitalize" style="color: #141E30;">{{ $user->role }}</span>
-                                <span class="px-2 py-1 bg-primary/10 text-primary text-[9px] font-medium rounded-full">Tidak dapat diubah</span>
-                            </div>
-                            <p class="text-[9px] text-slate-400 mt-2">Role ditentukan oleh administrator sistem</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SIDEBAR KANAN: Form Fields -->
-                <div class="lg:col-span-2 p-6">
-                    <div class="space-y-6">
-                        
-                        <!-- Informasi Pribadi Section -->
-                        <div>
-                            <div class="flex items-center gap-2 mb-4">
-                                <div class="w-1 h-4 bg-secondary rounded-full"></div>
-                                <h3 class="text-xs font-semibold uppercase tracking-wider" style="color: #141E30;">Informasi Pribadi</h3>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Nama -->
-                                <div class="space-y-1.5">
-                                    <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-medium">Nama Lengkap</label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                                            </svg>
-                                        </div>
-                                        <input type="text" name="name"
-                                               value="{{ old('name', $user->name) }}"
-                                               class="w-full bg-stone-50 border border-stone-200 rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20 transition-all">
-                                    </div>
-                                    @error('name') <p class="text-[10px] text-red-400 mt-1">{{ $message }}</p> @enderror
-                                </div>
-
-                                <!-- Email -->
-                                <div class="space-y-1.5">
-                                    <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-medium">Alamat Email</label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                                            </svg>
-                                        </div>
-                                        <input type="email" name="email"
-                                               value="{{ old('email', $user->email) }}"
-                                               class="w-full bg-stone-50 border border-stone-200 rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20 transition-all">
-                                    </div>
-                                    @error('email') <p class="text-[10px] text-red-400 mt-1">{{ $message }}</p> @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Kontak Section -->
-                        <div>
-                            <div class="flex items-center gap-2 mb-4">
-                                <div class="w-1 h-4 bg-secondary rounded-full"></div>
-                                <h3 class="text-xs font-semibold uppercase tracking-wider" style="color: #141E30;">Kontak</h3>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Phone -->
-                                <div class="space-y-1.5">
-                                    <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-medium">Nomor Telepon</label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                                            </svg>
-                                        </div>
-                                        <input type="tel" name="phone"
-                                               value="{{ old('phone', $user->phone) }}"
-                                               placeholder="08123456789"
-                                               class="w-full bg-stone-50 border border-stone-200 rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20 transition-all">
-                                    </div>
-                                    @error('phone') <p class="text-[10px] text-red-400 mt-1">{{ $message }}</p> @enderror
-                                </div>
-
-                                <!-- Alamat (full width) -->
-                                <div class="md:col-span-2 space-y-1.5">
-                                    <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-medium">Alamat</label>
-                                    <div class="relative">
-                                        <div class="absolute top-3 left-0 pl-3 pointer-events-none">
-                                            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                                            </svg>
-                                        </div>
-                                        <textarea name="alamat" rows="3"
-                                                  placeholder="Masukkan alamat lengkap"
-                                                  class="w-full bg-stone-50 border border-stone-200 rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20 transition-all resize-none">{{ old('alamat', $user->alamat) }}</textarea>
-                                    </div>
-                                    @error('alamat') <p class="text-[10px] text-red-400 mt-1">{{ $message }}</p> @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Keamanan Section -->
-                        <div>
-                            <div class="flex items-center gap-2 mb-4">
-                                <div class="w-1 h-4 bg-secondary rounded-full"></div>
-                                <h3 class="text-xs font-semibold uppercase tracking-wider" style="color: #141E30;">Keamanan</h3>
-                            </div>
-                            
-                            <div class="bg-stone-50/80 rounded-xl border border-stone-200 p-4 space-y-4">
-                                <p class="text-[10px] text-slate-400 flex items-center gap-1">
-                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    Kosongkan jika tidak ingin mengubah password
-                                </p>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="space-y-1.5">
-                                        <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-medium">Password Baru</label>
-                                        <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                                                </svg>
-                                            </div>
-                                            <input type="password" name="password"
-                                                   placeholder="Minimal 8 karakter"
-                                                   class="w-full bg-white border border-stone-200 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20 transition-all">
-                                        </div>
-                                        @error('password') <p class="text-[10px] text-red-400 mt-1">{{ $message }}</p> @enderror
-                                    </div>
-
-                                    <div class="space-y-1.5">
-                                        <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-medium">Konfirmasi</label>
-                                        <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            </div>
-                                            <input type="password" name="password_confirmation"
-                                                   placeholder="Ulangi password"
-                                                   class="w-full bg-white border border-stone-200 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20 transition-all">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <h1 class="text-xl font-bold text-slate-900" style="font-family: 'Georgia', serif;">Pengaturan Akun</h1>
             </div>
 
-            <!-- Footer Aksi -->
-            <div class="px-6 py-4 bg-stone-50/80 border-t border-stone-100 flex items-center justify-end gap-3">
-                <a href="{{ route('profile.index') }}"
-                   class="px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-800 bg-white border border-stone-200 hover:border-stone-300 rounded-lg transition-all duration-200">
-                    Batal
+            <div class="inline-flex p-1 bg-stone-100 rounded-xl border border-stone-200">
+                <span
+                    class="px-5 py-2 text-xs font-bold rounded-lg shadow-sm bg-white text-slate-900 border border-stone-100 cursor-default">
+                    Profil
+                </span>
+                <a href="{{ route('profile.password') }}"
+                    class="px-5 py-2 text-xs font-medium rounded-lg text-slate-500 hover:text-slate-700 hover:bg-stone-200/50 transition-colors">
+                    Password
                 </a>
-                <button type="submit"
-                        class="px-5 py-2 text-xs font-medium text-white bg-primary hover:bg-secondary rounded-lg transition-all duration-200 hover:-translate-y-0.5 shadow-sm shadow-primary/20 inline-flex items-center gap-2"
-                        style="background-color: #141E30;">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                    Simpan Perubahan
-                </button>
             </div>
+        </div>
 
-        </form>
+        <!-- Alert Success -->
+        @if (session('success'))
+            <div x-data="{ show: true }" x-show="show"
+                class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-sm flex items-center gap-3 shadow-sm">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="font-medium">{{ session('success') }}</span>
+            </div>
+        @endif
+
+        <!-- Main Form Card -->
+        <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+            <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-stone-100">
+
+                    <!-- KOLOM KIRI: Foto & Info -->
+                    <div class="lg:col-span-1 py-10 px-6 bg-stone-50/40 flex flex-col items-center text-center">
+                        <div class="relative group cursor-pointer" onclick="document.getElementById('input-foto').click()">
+                            @if ($user->foto)
+                                <img id="preview-foto" src="{{ asset('storage/' . $user->foto) }}"
+                                    class="w-36 h-36 rounded-full object-cover border-4 border-white shadow-xl ring-1 ring-stone-200 group-hover:ring-slate-300 transition-all">
+                            @else
+                                <div id="preview-initials"
+                                    class="w-36 h-36 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-5xl shadow-xl border-4 border-white ring-1 ring-stone-200">
+                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                </div>
+                                <img id="preview-foto" src=""
+                                    class="w-36 h-36 rounded-full object-cover border-4 border-white shadow-xl hidden">
+                            @endif
+
+                            <!-- Overlay Icon -->
+                            <div
+                                class="absolute inset-0 bg-slate-900/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[1px]">
+                                <svg class="w-8 h-8 text-white drop-shadow-md" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 space-y-3">
+                            <label for="input-foto"
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-stone-300 rounded-full text-xs font-bold uppercase tracking-wider text-slate-700 hover:border-slate-800 hover:bg-slate-50 transition-all shadow-sm cursor-pointer">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                </svg>
+                                Ganti Foto
+                            </label>
+                            <input type="file" name="foto" id="input-foto" accept="image/*" class="hidden">
+
+                            <div class="flex flex-col items-center gap-1">
+                                <span
+                                    class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold uppercase border border-slate-200 tracking-wide">
+                                    {{ $user->role }}
+                                </span>
+                                <p class="text-[10px] text-slate-400">JPG/PNG, Maks. 2MB</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 p-8 space-y-6 bg-white">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            <!-- Input Nama -->
+                            <div class="space-y-1.5 group">
+                                <label
+                                    class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1 group-focus-within:text-slate-800 transition-colors">Nama
+                                    Lengkap</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-slate-400 group-focus-within:text-slate-800 transition-colors"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="name" id="name"
+                                        value="{{ old('name', $user->name) }}" autocomplete="name"
+                                        class="w-full bg-white border @error('name') border-red-500 ring-red-100 @else border-stone-200 group-hover:border-stone-300 @enderror text-slate-800 text-sm rounded-xl focus:ring-4 focus:ring-slate-100 focus:border-slate-800 block pl-11 py-3 transition-all shadow-sm placeholder:text-slate-300"
+                                        placeholder="Contoh: John Doe">
+                                </div>
+                                @error('name')
+                                    <p class="text-[10px] text-red-500 ml-1 font-medium">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Input Email -->
+                            <div class="space-y-1.5 group">
+                                <label
+                                    class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1 group-focus-within:text-slate-800 transition-colors">Alamat
+                                    Email</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-slate-400 group-focus-within:text-slate-800 transition-colors"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <input type="email" name="email" id="email"
+                                        value="{{ old('email', $user->email) }}" autocomplete="email"
+                                        class="w-full bg-white border @error('email') border-red-500 ring-red-100 @else border-stone-200 group-hover:border-stone-300 @enderror text-slate-800 text-sm rounded-xl focus:ring-4 focus:ring-slate-100 focus:border-slate-800 block pl-11 py-3 transition-all shadow-sm placeholder:text-slate-300"
+                                        placeholder="nama@email.com">
+                                </div>
+                                @error('email')
+                                    <p class="text-[10px] text-red-500 ml-1 font-medium">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Input Telepon -->
+                        <div class="space-y-1.5 group">
+                            <label
+                                class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1 group-focus-within:text-slate-800 transition-colors">Nomor
+                                Telepon</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <svg class="w-5 h-5 text-slate-400 group-focus-within:text-slate-800 transition-colors"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                </div>
+                                <input type="tel" name="phone" id="phone"
+                                    value="{{ old('phone', $user->phone) }}" autocomplete="tel"
+                                    class="w-full bg-white border @error('phone') border-red-500 ring-red-100 @else border-stone-200 group-hover:border-stone-300 @enderror text-slate-800 text-sm rounded-xl focus:ring-4 focus:ring-slate-100 focus:border-slate-800 block pl-11 py-3 transition-all shadow-sm placeholder:text-slate-300"
+                                    placeholder="0812xxxx">
+                            </div>
+                            @error('phone')
+                                <p class="text-[10px] text-red-500 ml-1 font-medium">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Input Alamat -->
+                        <div class="space-y-1.5 group">
+                            <label
+                                class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1 group-focus-within:text-slate-800 transition-colors">Alamat
+                                Domisili</label>
+                            <div class="relative">
+                                <!-- Icon Align Top -->
+                                <div class="absolute top-3.5 left-0 pl-4 pointer-events-none">
+                                    <svg class="w-5 h-5 text-slate-400 group-focus-within:text-slate-800 transition-colors"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <textarea name="alamat" id="alamat" rows="3" autocomplete="street-address"
+                                    class="w-full bg-white border @error('alamat') border-red-500 ring-red-100 @else border-stone-200 group-hover:border-stone-300 @enderror text-slate-800 text-sm rounded-xl focus:ring-4 focus:ring-slate-100 focus:border-slate-800 block pl-11 py-3 transition-all shadow-sm resize-none placeholder:text-slate-300 leading-relaxed"
+                                    placeholder="Nama jalan, nomor rumah, RT/RW, Kecamatan...">{{ old('alamat', $user->alamat) }}</textarea>
+                            </div>
+                            @error('alamat')
+                                <p class="text-[10px] text-red-500 ml-1 font-medium">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Footer Buttons -->
+                        <div class="pt-6 mt-2 border-t border-stone-100 flex items-center justify-end gap-3">
+                            <a href="{{ route('profile.index') }}"
+                                class="px-5 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800 hover:bg-stone-50 rounded-xl transition-colors">
+                                Batal
+                            </a>
+                            <button type="submit"
+                                class="inline-flex items-center gap-2 px-6 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20 active:scale-95 focus:ring-4 focus:ring-slate-900/20">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                                Simpan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 
-</div>
+    <script>
+        // Preview Foto Logic
+        document.getElementById('input-foto').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('preview-foto');
+                    const initials = document.getElementById('preview-initials');
 
-<!-- Script Preview Foto -->
-<script>
-    const inputFoto = document.getElementById('input-foto');
-    const previewFoto = document.getElementById('preview-foto');
-    const previewInitials = document.getElementById('preview-initials');
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
 
-    inputFoto.addEventListener('change', function () {
-        const file = this.files[0];
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                previewFoto.src = e.target.result;
-                previewFoto.classList.remove('hidden');
-                if (previewInitials) previewInitials.classList.add('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-</script>
+                    if (initials) {
+                        initials.classList.add('hidden');
+                    }
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    </script>
 @endsection
