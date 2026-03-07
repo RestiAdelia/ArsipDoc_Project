@@ -1,121 +1,175 @@
 @extends('layouts.main')
 
 @section('content')
-    <div class="max-w-4xl mx-auto space-y-5">
+<div class="max-w-5xl mx-auto space-y-4">
 
-        {{-- HEADER --}}
-        <div class="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-stone-200">
+    {{-- HEADER & AKSI --}}
+    <div class="bg-white border border-stone-200 rounded-2xl shadow-sm px-5 py-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            {{-- Back button --}}
+            @if(!(isset($surat) && $surat))
+            <a href="javascript:history.back()"
+               class="w-8 h-8 flex items-center justify-center rounded-lg border border-stone-200 hover:bg-stone-50 text-slate-400 hover:text-slate-600 transition-colors duration-150">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+                </svg>
+            </a>
+            @endif
             <div>
-                <p class="text-[11px] uppercase tracking-[0.2em] text-slate-400 mb-1">
-                    {{ isset($surat) && $surat ? 'Arsip Surat' : 'Preview Mode' }}
-                </p>
-                <h1 class="text-lg font-semibold text-slate-800" style="font-family: Georgia, serif;">
+                <div class="flex items-center gap-2 mb-0.5">
+                    <span class="w-1 h-3 rounded-full" style="background-color: #3E5A76;"></span>
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-medium">
+                        {{ isset($surat) && $surat ? 'Arsip Surat' : 'Preview Mode' }}
+                    </p>
+                </div>
+                <h1 class="text-base font-semibold text-slate-800" style="font-family: Georgia, serif;">
                     {{ isset($surat) && $surat ? 'Detail Surat Keluar' : 'Cek Draft Surat' }}
                 </h1>
             </div>
-
-            <div class="flex gap-2">
-                @if (isset($surat) && $surat)
-                    <a href="{{ route('template.pdf', $surat->id) }}" target="_blank"
-                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg">
-                        Export PDF
-                    </a>
-                @else
-                    {{-- SIMPAN --}}
-                    <form action="{{ route('template.simpan', $template->id) }}" method="POST">
-                        @csrf
-
-                        @foreach ($dataInput as $key => $value)
-                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                        @endforeach
-
-                        <button type="submit"
-                            class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-sm rounded-lg">
-                            💾 Simpan Surat
-                        </button>
-                    </form>
-
-                    <form action="{{ route('template.editForm', $template->id) }}" method="POST">
-                        @csrf
-
-                        @foreach ($dataInput as $key => $value)
-                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                        @endforeach
-
-                        <button type="submit"
-                            class="px-4 py-2 bg-yellow-50 hover:bg-yellow-100 text-yellow-700 border border-yellow-200 text-sm rounded-lg">
-                            ✏️ Edit Kembali
-                        </button>
-                    </form>
-                @endif
-            </div>
         </div>
 
-        {{-- KERTAS SURAT --}}
-        <div class="bg-white border border-stone-200 shadow-lg p-12 min-h-[29.7cm] mx-auto"
-            style="width: 21cm; font-family: 'Times New Roman', serif;">
+        <div class="flex items-center gap-2">
+            @if(isset($surat) && $surat)
+                <a href="{{ route('template.pdf', $surat->id) }}" target="_blank"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-xl transition-all duration-150 shadow-sm shadow-red-600/20">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+                    </svg>
+                    Export PDF
+                </a>
+            @else
+                <a href="javascript:history.back()">
+                    <button type="submit"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-amber-50 text-amber-600 hover:text-amber-700 border border-stone-200 hover:border-amber-200 text-sm font-medium rounded-xl transition-all duration-150">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
+                        </svg>
+                        Edit Kembali
+                    </button>
+                </a>
 
-            {{-- KOP --}}
-            <div class="border-b-4 border-double border-black pb-4 mb-6 flex items-center gap-4">
-
-                {{-- ✅ LOGO FIX --}}
-                <img src="{{ asset('storage/instansi/logo.png') }}" class="h-20 w-auto" alt="Logo"
-                    onerror="this.style.display='none'">
-
-                <div class="text-center w-full">
-                    <h2 class="text-xl font-bold uppercase">
-                        {{ $instansi->nama_instansi ?? 'NAMA INSTANSI' }}
-                    </h2>
-                    <p class="text-sm">{{ $instansi->alamat ?? 'Alamat Instansi Lengkap' }}</p>
-                    <p class="text-sm">
-                        Telp: {{ $instansi->telepon ?? '-' }} |
-                        Email: {{ $instansi->email ?? '-' }}
-                    </p>
-                </div>
-            </div>
-
-            {{-- NOMOR --}}
-            <div class="flex justify-between mb-8 text-sm">
-                <table>
-                    <tr>
-                        <td class="font-bold w-24">Nomor</td>
-                        <td>:</td>
-                        <td>{{ $nomor }}</td>
-                    </tr>
-                    <tr>
-                        <td class="font-bold">Perihal</td>
-                        <td>:</td>
-                        <td class="font-bold">{{ $template->nama_template }}</td>
-                    </tr>
-                </table>
-
-                <div class="text-right">
-                    <p>{{ $instansi->kota ?? 'Padang' }},
-                        {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
-                    </p>
-                </div>
-            </div>
-
-            {{-- ISI --}}
-            <div class="text-justify text-black text-base leading-relaxed mb-10">
-                {!! $isi !!}
-            </div>
-
-            {{-- TTD --}}
-            <div class="flex justify-end mt-12">
-                <div class="text-center w-64">
-                    <p class="mb-20">
-                        Hormat Kami,<br>
-                        {{ $instansi->jabatan_pimpinan ?? 'Pimpinan' }}
-                    </p>
-
-                    <p class="font-bold underline">
-                        {{ $instansi->nama_pimpinan ?? '(Nama Pimpinan)' }}
-                    </p>
-                    
-                </div>
-            </div>
-
+                <form action="{{ route('template.simpan', $template->id) }}" method="POST">
+                    @csrf
+                    @foreach($dataInput as $key => $value)
+                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endforeach
+                    <button type="submit"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-xl transition-all duration-150 shadow-sm shadow-slate-900/20">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"/>
+                        </svg>
+                        Simpan Surat
+                    </button>
+                </form>
+            @endif
         </div>
     </div>
+
+    {{-- INFO BADGE --}}
+    @if(!(isset($surat) && $surat))
+    <div class="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700">
+        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+        </svg>
+        Ini adalah <strong class="mx-0.5">preview draft</strong> — surat belum tersimpan. Periksa kembali sebelum menyimpan.
+    </div>
+    @endif
+
+    {{-- KERTAS SURAT --}}
+    <div class="bg-white border border-stone-200 shadow-lg mx-auto overflow-hidden"
+         style="width: 21cm; min-height: 29.7cm; font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 1.6; padding: 2.5cm 2.5cm 2cm 3cm;">
+
+        {{-- KOP --}}
+        <div style="border-bottom: 4px double #000; padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px;">
+            <img src="{{ asset('storage/instansi/logo.png') }}"
+                 style="height: 80px; width: auto;"
+                 alt="Logo"
+                 onerror="this.style.display='none'">
+            <div style="text-align: center; flex: 1;">
+                <div style="font-size: 16pt; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">
+                    {{ $instansi->nama_instansi ?? 'NAMA INSTANSI' }}
+                </div>
+                <div style="font-size: 10pt; line-height: 1.4;">
+                    {{ $instansi->alamat ?? 'Jl. Alamat Instansi No. 1, Kota' }}
+                </div>
+                <div style="font-size: 10pt;">
+                    Telp: {{ $instansi->telepon ?? '-' }}&nbsp;&nbsp;|&nbsp;&nbsp;Email: {{ $instansi->email ?? '-' }}
+                </div>
+            </div>
+        </div>
+
+        {{-- NOMOR, SIFAT, LAMPIRAN, PERIHAL + TANGGAL --}}
+        <table style="width: 100%; margin-bottom: 16pt; font-size: 12pt; border-collapse: collapse;">
+            <tr>
+                <td style="vertical-align: top; width: 55%;">
+                    <table style="border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 90px; padding: 1.5pt 0;">Nomor</td>
+                            <td style="padding: 1.5pt 4pt;">:</td>
+                            <td style="padding: 1.5pt 0;">{{ $nomor }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1.5pt 0;">Sifat</td>
+                            <td style="padding: 1.5pt 4pt;">:</td>
+                            <td style="padding: 1.5pt 0;">{{ $sifat ?? 'Biasa' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1.5pt 0;">Lampiran</td>
+                            <td style="padding: 1.5pt 4pt;">:</td>
+                            <td style="padding: 1.5pt 0;">{{ $lampiran ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1.5pt 0;">Perihal</td>
+                            <td style="padding: 1.5pt 4pt;">:</td>
+                            <td style="padding: 1.5pt 0; font-weight: bold;">{{ $perihal ?? $template->nama_template }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="vertical-align: top; text-align: right; font-size: 12pt;">
+                    {{ $instansi->kota ?? 'Padang' }},
+                    @if(isset($dataInput['tanggal']) && $dataInput['tanggal'])
+                        {{ \Carbon\Carbon::parse($dataInput['tanggal'])->translatedFormat('d F Y') }}
+                    @else
+                        {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+                    @endif
+                </td>
+            </tr>
+        </table>
+
+        {{-- TUJUAN --}}
+        @if(isset($tujuan) && $tujuan)
+        <div style="margin-bottom: 16pt; font-size: 12pt;">
+            <p>Kepada Yth.</p>
+            <p>{{ $tujuan }}</p>
+            <p>di Tempat</p>
+        </div>
+        @endif
+
+        {{-- ISI SURAT --}}
+        <div style="text-align: justify; font-size: 12pt; line-height: 1.6; margin-bottom: 20pt;">
+            {!! $isi !!}
+        </div>
+
+        {{-- TANDA TANGAN --}}
+        <table style="width: 100%; margin-top: 24pt; border-collapse: collapse;">
+            <tr>
+                <td style="width: 55%;"></td>
+                <td style="width: 45%; text-align: center; font-size: 12pt; line-height: 1.6; vertical-align: top;">
+                    <p>Hormat Kami,</p>
+                    <p>{{ $instansi->jabatan_pimpinan ?? 'Pimpinan' }}</p>
+                    <div style="height: 60pt;"></div>
+                    <p style="font-weight: bold; text-decoration: underline;">
+                        {{ $instansi->nama_pimpinan ?? '(Nama Pimpinan)' }}
+                    </p>
+                
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+    {{-- SPACER BAWAH --}}
+    <div class="h-4"></div>
+
+</div>
 @endsection

@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DokumenController;
 use App\Http\Controllers\GenerateSuratCOntroller;
 use App\Http\Controllers\KategoriSuratController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\SuratMasukController;
@@ -66,7 +67,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::post('/surat-masuk/{id}/arsipkan', [SuratMasukController::class, 'arsipkan'])
         ->name('surat-masuk.arsipkan');
+
+ 
+    // Surat Masuk
+    Route::get('laporan/surat-masuk', [LaporanController::class, 'suratMasuk'])->name('laporan.surat-masuk');
+    Route::get('laporan/surat-keluar', [LaporanController::class, 'suratKeluar'])->name('laporan.surat-keluar');
+   
+    Route::get('laporan/arsip', [LaporanController::class, 'arsip'])->name('laporan.arsip');
+    Route::get('/laporan/cetak-pdf', [LaporanController::class, 'cetakPDF'])->name('laporan.cetak-pdf');
+   
 });
+
 
 Route::middleware(['auth', 'user'])->prefix('user')->name('user.')->group(function () {
     Route::get('surat_masuk', [SuratMasukController::class, 'indexUser'])->name('surat_masuk.index'); // list surat user

@@ -31,4 +31,5 @@ class SuratMasuk extends Model
     {
         return $this->hasOne(Dokumen::class, 'nomor_dokumen', 'nomor_surat');
     }
+   
 }

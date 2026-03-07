@@ -31,4 +31,8 @@ class SuratKeluar extends Model
     {
         return $this->belongsTo(KategoriSurat::class, 'kategori_id');
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
