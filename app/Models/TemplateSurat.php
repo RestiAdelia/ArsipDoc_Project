@@ -17,9 +17,17 @@ class TemplateSurat extends Model
         'isi_template',
         'field_json'
     ];
-    protected $casts = [
-        'field_json' => 'array',
-    ];
+   public function getFieldJsonAttribute($value): array
+    {
+        if (is_array($value)) {
+            return $value;
+        }
+        if (is_string($value) && !empty($value)) {
+            $decoded = json_decode($value, true);
+            return is_array($decoded) ? $decoded : [];
+        }
+        return [];
+    }
     public function kategori()
     {
         return $this->belongsTo(KategoriSurat::class, 'kategori_id');
