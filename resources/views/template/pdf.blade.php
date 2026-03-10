@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Surat - {{ $nomor }}</title>
@@ -8,7 +9,11 @@
             margin: 2.5cm 2.5cm 2cm 3cm;
             size: A4 portrait;
         }
-        * { box-sizing: border-box; }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Times New Roman', Times, serif;
             font-size: 12pt;
@@ -17,9 +22,20 @@
             padding: 0;
             color: #000;
         }
-        table { border-collapse: collapse; width: 100%; }
-        td { vertical-align: top; }
-        p { margin: 0; padding: 0; }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td {
+            vertical-align: top;
+        }
+
+        p {
+            margin: 0;
+            padding: 0;
+        }
 
         /* KOP */
         .kop-wrap {
@@ -27,31 +43,91 @@
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
-        .kop-logo { width: 90px; text-align: center; vertical-align: middle; padding-right: 12px; }
-        .kop-logo img { height: 80px; width: auto; }
-        .kop-text { text-align: center; vertical-align: middle; }
-        .kop-instansi { font-size: 16pt; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
-        .kop-alamat { font-size: 10pt; line-height: 1.4; }
+
+        .kop-logo {
+            width: 90px;
+            text-align: center;
+            vertical-align: middle;
+            padding-right: 12px;
+        }
+
+        .kop-logo img {
+            height: 80px;
+            width: auto;
+        }
+
+        .kop-text {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .kop-instansi {
+            font-size: 16pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+
+        .kop-alamat {
+            font-size: 10pt;
+            line-height: 1.4;
+        }
 
         /* INFO SURAT */
-        .info-surat { margin-bottom: 16pt; }
-        .info-surat td.lbl { width: 80px; padding: 1.5pt 0; }
-        .info-surat td.sep { width: 12px; padding: 1.5pt 6pt; }
-        .info-surat td.val { padding: 1.5pt 0; }
+        .info-surat {
+            margin-bottom: 16pt;
+        }
+
+        .info-surat td.lbl {
+            width: 80px;
+            padding: 1.5pt 0;
+        }
+
+        .info-surat td.sep {
+            width: 12px;
+            padding: 1.5pt 6pt;
+        }
+
+        .info-surat td.val {
+            padding: 1.5pt 0;
+        }
 
         /* TUJUAN */
-        .tujuan { margin-bottom: 16pt; line-height: 1.8; }
+        .tujuan {
+            margin-bottom: 16pt;
+            line-height: 1.8;
+        }
 
         /* ISI */
-        .isi-surat { text-align: justify; line-height: 1.8; margin-bottom: 20pt; }
+        .isi-surat {
+            text-align: justify;
+            line-height: 1.8;
+            margin-bottom: 20pt;
+        }
 
         /* TTD */
-        .ttd-wrap { margin-top: 24pt; page-break-inside: avoid; }
-        .ttd-kanan { width: 45%; text-align: center; }
-        .ttd-space { height: 60pt; }
-        .ttd-nama { font-weight: bold; text-decoration: underline; }
+        .ttd-wrap {
+            margin-top: 24pt;
+            page-break-inside: avoid;
+        }
+
+        .ttd-kanan {
+            width: 45%;
+            text-align: center;
+        }
+
+        .ttd-space {
+            height: 60pt;
+        }
+
+        .ttd-nama {
+            font-weight: bold;
+            text-decoration: underline;
+        }
     </style>
 </head>
+
 <body>
 
     {{-- KOP SURAT --}}
@@ -65,7 +141,8 @@
                     <p class="kop-instansi">{{ $instansi->nama_instansi ?? 'NAMA INSTANSI' }}</p>
                     <p class="kop-alamat">{{ $instansi->alamat ?? 'Jl. Alamat Instansi No. 1, Kota' }}</p>
                     <p class="kop-alamat">
-                        Telp: {{ $instansi->telepon ?? '-' }}&nbsp;&nbsp;|&nbsp;&nbsp;Email: {{ $instansi->email ?? '-' }}
+                        Telp: {{ $instansi->telepon ?? '-' }}&nbsp;&nbsp;|&nbsp;&nbsp;Email:
+                        {{ $instansi->email ?? '-' }}
                     </p>
                 </td>
             </tr>
@@ -101,7 +178,7 @@
             </td>
             <td style="width: 45%; text-align: right; vertical-align: top;">
                 {{ $instansi->kota ?? 'Padang' }},
-                @if(!empty($dataInput['tanggal']))
+                @if (!empty($dataInput['tanggal']))
                     {{ \Carbon\Carbon::parse($dataInput['tanggal'])->translatedFormat('d F Y') }}
                 @else
                     {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
@@ -111,12 +188,12 @@
     </table>
 
     {{-- TUJUAN --}}
-    @if(!empty($tujuan))
-    <div class="tujuan">
-        <p>Kepada Yth.</p>
-        <p>{{ $tujuan }}</p>
-        <p>di Tempat</p>
-    </div>
+    @if (!empty($tujuan))
+        <div class="tujuan">
+            <p>Kepada Yth.</p>
+            <p>{{ $tujuan }}</p>
+            <p>di Tempat</p>
+        </div>
     @endif
 
     {{-- ISI SURAT --}}
@@ -125,17 +202,21 @@
     </div>
 
     {{-- TANDA TANGAN --}}
-    <table class="ttd-wrap">
+    <table style="width: 100%; margin-top: 24pt; border-collapse: collapse;">
         <tr>
             <td style="width: 55%;"></td>
-            <td class="ttd-kanan">
-                <p>Hormat Kami,</p>
-                <p>{{ $instansi->jabatan_pimpinan ?? 'Pimpinan' }}</p>
-                <div class="ttd-space"></div>
-                
+            <td style="width: 45%; text-align: center; font-size: 12pt; line-height: 1.8; vertical-align: top;">
+                <p style="margin: 0;">Hormat Kami,</p>
+                <p style="margin: 0;">{{ $instansi->jabatan_pimpinan ?? 'Pimpinan' }}</p>
+                <div style="height: 60pt;"></div>
+                <p style="margin: 0; font-weight: bold; text-decoration: underline;">
+                    {{ $instansi->nama_pimpinan ?? '(Nama Pimpinan)' }}
+                </p>
+
             </td>
         </tr>
     </table>
 
 </body>
+
 </html>

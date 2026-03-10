@@ -173,9 +173,7 @@
                     <p style="margin: 0; font-weight: bold; text-decoration: underline;">
                         {{ $instansi->nama_pimpinan ?? '(Nama Pimpinan)' }}
                     </p>
-                    <p style="margin: 0; font-size: 11pt;">
-                        NIP. {{ $instansi->nip_pimpinan ?? '-' }}
-                    </p>
+                  
                 </td>
             </tr>
         </table>

@@ -11,15 +11,12 @@ use Illuminate\Support\Facades\Storage;
 
 class GenerateSuratController extends Controller
 {
-
-    // ── Pilih template ───────────────────────────────────────────
     public function pilihTemplate()
     {
         $templates = TemplateSurat::with('kategori')->latest()->get();
         return view('template.pilih_template', compact('templates'));
     }
 
-    // ── Form isi field ───────────────────────────────────────────
     public function form($id)
     {
         $template = TemplateSurat::findOrFail($id);
@@ -28,7 +25,6 @@ class GenerateSuratController extends Controller
         return view('template.form_dinamis', compact('template', 'fields'));
     }
 
-    // ── Edit kembali form dengan data lama ───────────────────────
     public function editForm(Request $request, $id)
     {
         $template = TemplateSurat::findOrFail($id);
@@ -45,7 +41,6 @@ class GenerateSuratController extends Controller
         $dataInput = $request->except('_token');
         $fields    = $template->field_json ?? [];
 
-        // Format field date
         foreach ($fields as $field) {
             $key  = $field['name'] ?? '';
             $type = $field['type'] ?? '';
@@ -54,6 +49,7 @@ class GenerateSuratController extends Controller
                     ->translatedFormat('d F Y');
             }
         }
+
         $isi = $template->isi_template;
         foreach ($dataInput as $key => $value) {
             $isi = preg_replace('/{{\s*' . preg_quote($key, '/') . '\s*}}/', $value, $isi);
@@ -85,73 +81,66 @@ class GenerateSuratController extends Controller
 
         $sessionKey = 'surat_saved_' . $id . '_' . md5(json_encode($dataInput));
         if (session()->has($sessionKey)) {
-            $suratLama = SuratKeluar::where('template_id', $id)
-                ->where('data_isian', json_encode($dataInput))
-                ->latest()
-                ->first();
-
+            $suratLama = SuratKeluar::where('template_id', $id)->latest()->first();
             if ($suratLama) {
                 return redirect()
                     ->route('template.previewSaved', $suratLama->id)
-                    ->with('warning', 'Surat ini sudah disimpan .');
+                    ->with('warning', 'Surat ini sudah pernah disimpan sebelumnya.');
             }
-
-            $fields = $template->field_json ?? [];
-            foreach ($fields as $field) {
-                $key  = $field['name'] ?? '';
-                $type = $field['type'] ?? '';
-                if ($type === 'date' && !empty($dataInput[$key])) {
-                    $dataInput[$key] = \Carbon\Carbon::parse($dataInput[$key])
-                        ->translatedFormat('d F Y');
-                }
-            }
-
-            $nomorSurat = $this->generateNomorSurat();
-
-            // Replace untuk generate isi PDF
-            $isi = $template->isi_template;
-            foreach ($dataInput as $key => $value) {
-                $isi = preg_replace('/{{\s*' . preg_quote($key, '/') . '\s*}}/', $value, $isi);
-            }
-            $isi = nl2br(e($isi));
-
-            // Generate & simpan PDF
-            $namaFile = 'surat-' . str_replace('/', '-', $nomorSurat) . '.pdf';
-            $path     = 'surat_keluar/' . $namaFile;
-
-            $pdf = Pdf::loadView('template.pdf', [
-                'template'  => $template,
-                'isi'       => $isi,
-                'nomor'     => $nomorSurat,
-                'dataInput' => $dataInput,
-                'instansi'  => $instansi,
-                'sifat'     => $dataInput['sifat']    ?? '-',
-                'lampiran'  => $dataInput['lampiran'] ?? '-',
-                'perihal'   => $dataInput['perihal']  ?? $template->nama_template,
-                'tujuan'    => $dataInput['tujuan']   ?? null,
-            ])->setPaper('A4', 'portrait');
-
-            Storage::disk('public')->put($path, $pdf->output());
-
-            // Simpan ke DB
-            $surat = SuratKeluar::create([
-                'template_id' => $template->id,
-                'kategori_id' => $template->kategori_id,
-                'nomor_surat' => $nomorSurat,
-                'data_isian'  => json_encode($dataInput),
-                'file_pdf'    => $path,
-            ]);
-
-            // ── Tandai sudah disimpan di session ─────────────────────
-            session()->put($sessionKey, true);
-
-            return redirect()
-                ->route('template.previewSaved', $surat->id)
-                ->with('success', 'Surat berhasil disimpan.');
         }
+        $fields = $template->field_json ?? [];
+        foreach ($fields as $field) {
+            $key  = $field['name'] ?? '';
+            $type = $field['type'] ?? '';
+            if ($type === 'date' && !empty($dataInput[$key])) {
+                $dataInput[$key] = \Carbon\Carbon::parse($dataInput[$key])
+                    ->translatedFormat('d F Y');
+            }
+        }
+
+        $nomorSurat = $this->generateNomorSurat();
+
+        $isi = $template->isi_template;
+        foreach ($dataInput as $key => $value) {
+            $isi = preg_replace('/{{\s*' . preg_quote($key, '/') . '\s*}}/', $value, $isi);
+        }
+        $isi = nl2br(e($isi));
+
+        $namaFile = 'surat-' . str_replace('/', '-', $nomorSurat) . '.pdf';
+        $path     = 'surat_keluar/' . $namaFile;
+
+        $pdf = Pdf::loadView('template.pdf', [
+            'template'  => $template,
+            'isi'       => $isi,
+            'nomor'     => $nomorSurat,
+            'dataInput' => $dataInput,
+            'instansi'  => $instansi,
+            'sifat'     => $dataInput['sifat']    ?? '-',
+            'lampiran'  => $dataInput['lampiran'] ?? '-',
+            'perihal'   => $dataInput['perihal']  ?? $template->nama_template,
+            'tujuan'    => $dataInput['tujuan']   ?? null,
+        ])->setPaper('A4', 'portrait');
+
+        Storage::disk('public')->put($path, $pdf->output());
+
+        // Simpan ke DB
+        $surat = SuratKeluar::create([
+            'template_id' => $template->id,
+            'kategori_id' => $template->kategori_id,
+            'nomor_surat' => $nomorSurat,
+            'data_isian'  => json_encode($dataInput),
+            'file_pdf'    => $path,
+        ]);
+
+        //  Tandai sudah disimpan di session
+        session()->put($sessionKey, true);
+
+        return redirect()
+            ->route('template.previewSaved', $surat->id)
+            ->with('success', 'Surat berhasil disimpan.');
     }
 
-    // ── Preview surat yang sudah tersimpan ───────────────────────
+    //  Preview surat yang sudah tersimpan
     public function previewSaved($id)
     {
         $surat     = SuratKeluar::with('template')->findOrFail($id);
@@ -161,7 +150,6 @@ class GenerateSuratController extends Controller
             ? $surat->data_isian
             : (json_decode($surat->data_isian, true) ?? []);
 
-        // Replace untuk tampilan preview
         $isi = $template->isi_template;
         foreach ($dataInput as $key => $value) {
             $isi = preg_replace('/{{\s*' . preg_quote($key, '/') . '\s*}}/', $value, $isi);
@@ -183,7 +171,7 @@ class GenerateSuratController extends Controller
         ]);
     }
 
-    // ── Export PDF dari surat tersimpan ──────────────────────────
+    // Export PDF dari surat tersimpan
     public function exportPdf($id)
     {
         $surat     = SuratKeluar::with('template')->findOrFail($id);
@@ -193,7 +181,6 @@ class GenerateSuratController extends Controller
             ? $surat->data_isian
             : (json_decode($surat->data_isian, true) ?? []);
 
-        // Replace untuk PDF
         $isi = $template->isi_template;
         foreach ($dataInput as $key => $value) {
             $isi = preg_replace('/{{\s*' . preg_quote($key, '/') . '\s*}}/', $value, $isi);
@@ -215,7 +202,7 @@ class GenerateSuratController extends Controller
         return $pdf->stream('surat_' . str_replace('/', '-', $surat->nomor_surat) . '.pdf');
     }
 
-    // ── Generate nomor surat ─────────────────────────────────────
+    // Generate nomor surat
     private function generateNomorSurat(): string
     {
         $last = SuratKeluar::latest()->first();
